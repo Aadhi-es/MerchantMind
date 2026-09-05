@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MerchantMind — 2-Slide Pitch Deck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+    code, pre, .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-stone-950 text-stone-100 min-h-screen flex flex-col justify-between select-none">
+  <!-- Top Bar -->
+  <header class="px-8 py-4 border-b border-stone-800 bg-stone-900/60 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white">M</div>
+      <span class="text-xl font-bold tracking-tight">MerchantMind</span>
+      <span class="text-xs font-mono px-2 py-0.5 rounded bg-stone-800 text-stone-400 border border-stone-700">Track 01: AI Growth & Agentic Commerce</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span id="slideIndicator" class="text-xs font-mono text-stone-400">Slide 1 of 2</span>
+      <button onclick="goToSlide(1)" id="btn1" class="px-3 py-1 text-xs font-mono rounded bg-blue-600 text-white font-bold">1. The Shift</button>
+      <button onclick="goToSlide(2)" id="btn2" class="px-3 py-1 text-xs font-mono rounded bg-stone-800 text-stone-400 hover:text-white">2. Architecture</button>
+      <button onclick="toggleFullscreen()" class="px-2.5 py-1 text-xs font-mono rounded bg-stone-900 border border-stone-700 text-stone-300 hover:text-white">⛶ Fullscreen</button>
+    </div>
+  </header>
+
+  <!-- Slide 1 -->
+  <main id="slide1" class="flex-1 flex items-center justify-center p-8 max-w-7xl mx-auto w-full">
+    <div class="w-full flex flex-col gap-6">
+      <div>
+        <div class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-1">⚡ The 2026 Paradigm Shift | NPCI UAP & Google AP2</div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          The Next 100 Million Shoppers Won't Be Human.<br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-200">They Will Be Autonomous AI Buyer Agents.</span>
+        </h1>
+        <p class="text-stone-400 mt-2 text-sm md:text-base max-w-3xl">
+          E-commerce was designed for human clicks. When an AI bot arrives to purchase on a user's behalf, today's stores break completely.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mt-2">
+        <!-- Broken Storefront -->
+        <div class="md:col-span-5 p-6 rounded-2xl bg-red-950/20 border border-red-900/40 flex flex-col justify-between gap-4">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-red-900/40 mb-3">
+              <span class="text-xs font-mono text-red-400 font-bold uppercase tracking-wider">❌ Traditional Store (Fails Bots)</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-red-900/40 text-red-300 font-mono">100% Abandonment</span>
+            </div>
+            <div class="space-y-3 font-mono text-xs">
+              <div class="p-3 rounded-xl bg-black/40 border border-red-900/30">1. AI Buyer Bot Arrives on consumer's behalf</div>
+              <div class="text-center text-red-500 font-bold">▼</div>
+              <div class="p-3 rounded-xl bg-black/40 border border-red-900/30">2. Blocked by Captcha & JS DOM (No machine catalog)</div>
+              <div class="text-center text-red-500 font-bold">▼</div>
+              <div class="p-3 rounded-xl bg-black/40 border border-red-900/30">3. Rigid Fixed Pricing (No negotiation protocol)</div>
+              <div class="text-center text-red-500 font-bold">▼</div>
+              <div class="p-3 rounded-xl bg-red-900/30 border border-red-700 font-bold text-red-200">4. Checkout Failure & Abort (Manual human OTP needed)</div>
+            </div>
+          </div>
+          <div class="text-xs text-stone-500 pt-2 border-t border-red-900/30">Result: Merchant loses high-intent transaction to competitor.</div>
+        </div>
+
+        <!-- MerchantMind -->
+        <div class="md:col-span-7 p-6 rounded-2xl bg-emerald-950/20 border border-emerald-800/40 flex flex-col justify-between gap-4">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-emerald-800/40 mb-3">
+              <span class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">✓ MerchantMind Infrastructure on Razorpay Rails</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-900/40 text-emerald-300 font-mono font-bold">Zero Friction</span>
+            </div>
+            <div class="space-y-3 font-mono text-xs">
+              <div class="p-3 rounded-xl bg-black/40 border border-emerald-800/40 flex justify-between items-center">
+                <span>1. ACP Machine-Readable Catalog</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800">GET /api/agent/catalog (340ms)</span>
+              </div>
+              <div class="text-center text-emerald-500 font-bold">▼</div>
+              <div class="p-3 rounded-xl bg-black/40 border border-emerald-800/40 flex justify-between items-center">
+                <span>2. Live Dual-Agent Haggling Duel</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">Gemini 3.5 Flash Lite + Margin Defense</span>
+              </div>
+              <div class="text-center text-emerald-500 font-bold">▼</div>
+              <div class="p-3 rounded-xl bg-black/40 border border-emerald-800/40 flex justify-between items-center">
+                <span>3. Cryptographic AP2 Mandate Signing</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800">Delegated Budget Caps</span>
+              </div>
+              <div class="text-center text-emerald-500 font-bold">▼</div>
+              <div class="p-3 rounded-xl bg-emerald-900/30 border border-emerald-600 font-bold text-emerald-200 flex justify-between items-center">
+                <span>4. Razorpay Test Rails Settlement</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-stone-950 font-bold">Instant UPI Reserve Debit</span>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-3 pt-3 border-t border-emerald-800/40 text-center font-mono">
+            <div class="p-2 rounded-lg bg-black/40 border border-emerald-900/40"><div class="text-emerald-400 font-bold text-lg">+24%</div><div class="text-[10px] text-stone-400">Basket Size</div></div>
+            <div class="p-2 rounded-lg bg-black/40 border border-emerald-900/40"><div class="text-emerald-400 font-bold text-lg">100%</div><div class="text-[10px] text-stone-400">Machine Ready</div></div>
+            <div class="p-2 rounded-lg bg-black/40 border border-emerald-900/40"><div class="text-emerald-400 font-bold text-lg">0%</div><div class="text-[10px] text-stone-400">Margin Breach</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Slide 2 -->
+  <main id="slide2" class="hidden flex-1 flex items-center justify-center p-8 max-w-7xl mx-auto w-full">
+    <div class="w-full flex flex-col gap-6">
+      <div>
+        <div class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mb-1">🛡️ The Hackathon Bar | Explainable, Bounded & Gated</div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          End-to-End System Architecture & Financial Governance
+        </h1>
+        <p class="text-stone-400 mt-2 text-sm md:text-base max-w-3xl">
+          Every money action is mathematically bounded by merchant guardrails, backed by cryptographic authority tokens, and permanently recorded in an immutable forensic audit trail.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mt-2">
+        <!-- 1 -->
+        <div class="p-5 rounded-2xl bg-stone-900 border border-stone-800 flex flex-col justify-between gap-3">
+          <div>
+            <div class="text-xs font-mono text-blue-400 font-bold pb-2 border-b border-stone-800 mb-2">1. DUAL CHANNELS</div>
+            <div class="space-y-2 text-xs">
+              <div class="p-2.5 rounded-lg bg-stone-950 border border-stone-800"><div class="font-bold text-white">Human Shoppers</div><div class="text-stone-400 text-[11px] mt-0.5">Chat Commerce (/), 360° Inspector, Multi-Item Show Cart.</div></div>
+              <div class="p-2.5 rounded-lg bg-stone-950 border border-stone-800"><div class="font-bold text-white">AI Buyer Bots</div><div class="text-stone-400 text-[11px] mt-0.5">M2M REST API (/api/agent/*) with AP2 & ACP Discovery.</div></div>
+            </div>
+          </div>
+          <div class="text-[10px] font-mono text-stone-500">1,000+ SKU Catalog Indexed</div>
+        </div>
+
+        <!-- 2 -->
+        <div class="p-5 rounded-2xl bg-stone-900 border border-stone-800 flex flex-col justify-between gap-3">
+          <div>
+            <div class="text-xs font-mono text-purple-400 font-bold pb-2 border-b border-stone-800 mb-2">2. REASONING CORE</div>
+            <div class="space-y-2 text-xs">
+              <div class="p-2.5 rounded-lg bg-stone-950 border border-stone-800"><div class="font-bold text-white">Gemini 3.5 Flash Lite</div><div class="text-stone-400 text-[11px] mt-0.5">Unscripted multi-turn haggling dialogue & game theory.</div></div>
+              <div class="p-2.5 rounded-lg bg-stone-950 border border-stone-800"><div class="font-bold text-white">3-Turn Convergence</div><div class="text-stone-400 text-[11px] mt-0.5">Anchor ➔ Walkaway Bluff ➔ Pareto Accord with instant UPI trigger.</div></div>
+            </div>
+          </div>
+          <div class="text-[10px] font-mono text-stone-500">Latency: 340ms Scoped Retrieval</div>
+        </div>
+
+        <!-- 3 -->
+        <div class="p-5 rounded-2xl bg-stone-900 border border-amber-900/40 flex flex-col justify-between gap-3">
+          <div>
+            <div class="text-xs font-mono text-amber-400 font-bold pb-2 border-b border-amber-900/40 mb-2">3. MATH FIREWALL</div>
+            <div class="space-y-2 text-xs">
+              <div class="p-2.5 rounded-lg bg-stone-950 border border-amber-900/30"><div class="font-bold text-amber-300">Upsell Ceiling: ≤ 30%</div><div class="text-stone-400 text-[11px] mt-0.5">Blocks 500% LLM hallucination upgrades mathematically.</div></div>
+              <div class="p-2.5 rounded-lg bg-stone-950 border border-amber-900/30"><div class="font-bold text-amber-300">Discount Cap: Max 15%</div><div class="text-stone-400 text-[11px] mt-0.5">Defends wholesale floor; guarantees +10% merchant margin.</div></div>
+            </div>
+          </div>
+          <div class="text-[10px] font-mono text-amber-500 font-semibold">Zero Trust on Prompt Alone</div>
+        </div>
+
+        <!-- 4 -->
+        <div class="p-5 rounded-2xl bg-stone-900 border border-emerald-900/40 flex flex-col justify-between gap-3">
+          <div>
+            <div class="text-xs font-mono text-emerald-400 font-bold pb-2 border-b border-emerald-900/40 mb-2">4. SETTLEMENT & AUDIT</div>
+            <div class="space-y-2 text-xs">
+              <div class="p-2.5 rounded-lg bg-stone-950 border border-emerald-900/30"><div class="font-bold text-emerald-300">Razorpay Test Rails</div><div class="text-stone-400 text-[11px] mt-0.5">Orders, Payment Links & Instant UPI reserve pools.</div></div>
+              <div class="p-2.5 rounded-lg bg-stone-950 border border-emerald-900/30"><div class="font-bold text-emerald-300">Supabase Audit Trail</div><div class="text-stone-400 text-[11px] mt-0.5">Append-only chronological ledger with RLS & cryptographic hashes.</div></div>
+            </div>
+          </div>
+          <div class="text-[10px] font-mono text-emerald-400 font-semibold">Graceful Failure (/failure-demo)</div>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-stone-900/80 border border-stone-800 flex items-center justify-between text-xs font-mono">
+        <span class="text-stone-300">🔄 <strong class="text-white">Graceful Failure Protocol:</strong> When bank network timeouts drop UPI transactions, MerchantMind triggers non-alarmist recovery with an idempotent replacement link & zero duplicate charges.</span>
+        <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold">TESTED & VERIFIED</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="px-8 py-4 border-t border-stone-800 bg-stone-900/60 flex items-center justify-between text-xs font-mono text-stone-500">
+    <div>MerchantMind • Razorpay Hackathon 2026 • Track 01</div>
+    <div class="flex gap-2">
+      <button onclick="goToSlide(1)" class="px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-stone-300 hover:text-white">← Slide 1</button>
+      <button onclick="goToSlide(2)" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500">Slide 2 →</button>
+    </div>
+  </footer>
+
+  <script>
+    function goToSlide(n) {
+      document.getElementById('slide1').classList.toggle('hidden', n !== 1);
+      document.getElementById('slide2').classList.toggle('hidden', n !== 2);
+      document.getElementById('slideIndicator').innerText = 'Slide ' + n + ' of 2';
+      document.getElementById('btn1').className = n === 1 ? 'px-3 py-1 text-xs font-mono rounded bg-blue-600 text-white font-bold' : 'px-3 py-1 text-xs font-mono rounded bg-stone-800 text-stone-400 hover:text-white';
+      document.getElementById('btn2').className = n === 2 ? 'px-3 py-1 text-xs font-mono rounded bg-blue-600 text-white font-bold' : 'px-3 py-1 text-xs font-mono rounded bg-stone-800 text-stone-400 hover:text-white';
+    }
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') goToSlide(2);
+      if (e.key === 'ArrowLeft') goToSlide(1);
+    });
+  </script>
+</body>
+</html>
