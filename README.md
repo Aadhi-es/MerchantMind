@@ -63,13 +63,7 @@ External AI buyer agents can transact with MerchantMind programmatically:
 
 ---
 
-## The "2 AM Story" (For Video Presentation)
 
-During initial testing of the upsell engine, the LLM proposed an upgrade from an entry-level wireless mouse (Logitech Pebble at ₹1,495) to a high-end studio workstation mouse (Logitech MX Master 3S at ₹8,995) — a 500% price jump. While technically a top-tier peripheral, pushing a 6x price increase creates immediate customer sticker shock and drops conversion to near zero.
-
-We introduced the **Financial Guardrail Layer** (`lib/guardrails.ts`), enforcing a strict 30% delta ceiling on all upsell proposals. Now, when an upsell is considered, the agent mathematically validates that `(upsell - original) / original <= 0.30`. If it breaches the cap, the system automatically suppresses the aggressive upsell and falls back to a relevant cross-sell (e.g., leather desk mat for ₹799) or proceeds directly to checkout. The entire evaluation is logged in the audit trail with the guardrail validation badge.
-
----
 
 ## 🛠️ Postmortem, Failure Recovery & Submission Docs
 - **What Broke & How We Solved It:** Read the transparent engineering postmortem in [`WHAT_BROKE.md`](./WHAT_BROKE.md).
