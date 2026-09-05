@@ -73,5 +73,5 @@ We introduced the **Financial Guardrail Layer** (`lib/guardrails.ts`), enforcing
 
 ## 🛠️ Postmortem, Failure Recovery & Submission Docs
 - **What Broke & How We Solved It:** Read the transparent engineering postmortem in [`WHAT_BROKE.md`](./WHAT_BROKE.md).
-- **Pitch Script & Hackathon Submission Answers:** Word-for-word 5-minute video walkthrough and form answers in [`PITCH_SCRIPT_AND_SUBMISSION.md`](./PITCH_SCRIPT_AND_SUBMISSION.md).
+
 
