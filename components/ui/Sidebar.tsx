@@ -26,7 +26,6 @@ export function Sidebar() {
     { name: "Audit Trail", href: "/dashboard/audit", icon: ShieldCheck },
     { name: "Failure Recovery", href: "/failure-demo", icon: AlertTriangle },
     { name: "Guardrails & Rules", href: "/settings", icon: Sliders },
-    { name: "Pitch Deck (2 Slides)", href: "/pitch", icon: Sparkles },
   ];
 
   return (

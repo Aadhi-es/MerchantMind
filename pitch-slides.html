@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MerchantMind — 2-Slide Pitch Deck</title>
+  <title>MerchantMind — 2-Slide Flowchart Deck</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -16,19 +16,19 @@
   <!-- Top Bar -->
   <header class="px-8 py-4 border-b border-stone-800 bg-stone-900/60 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white">M</div>
+      <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-xs">M</div>
       <span class="text-xl font-bold tracking-tight">MerchantMind</span>
       <span class="text-xs font-mono px-2 py-0.5 rounded bg-stone-800 text-stone-400 border border-stone-700">Track 01: AI Growth & Agentic Commerce</span>
     </div>
     <div class="flex items-center gap-3">
       <span id="slideIndicator" class="text-xs font-mono text-stone-400">Slide 1 of 2</span>
-      <button onclick="goToSlide(1)" id="btn1" class="px-3 py-1 text-xs font-mono rounded bg-blue-600 text-white font-bold">1. The Shift</button>
-      <button onclick="goToSlide(2)" id="btn2" class="px-3 py-1 text-xs font-mono rounded bg-stone-800 text-stone-400 hover:text-white">2. Architecture</button>
-      <button onclick="toggleFullscreen()" class="px-2.5 py-1 text-xs font-mono rounded bg-stone-900 border border-stone-700 text-stone-300 hover:text-white">⛶ Fullscreen</button>
+      <button onclick="goToSlide(1)" id="btn1" class="px-3 py-1 text-xs font-mono rounded bg-blue-600 text-white font-bold transition-all">1. The Shift</button>
+      <button onclick="goToSlide(2)" id="btn2" class="px-3 py-1 text-xs font-mono rounded bg-stone-800 text-stone-400 hover:text-white transition-all">2. Architecture</button>
+      <button onclick="toggleFullscreen()" class="px-2.5 py-1 text-xs font-mono rounded bg-stone-900 border border-stone-700 text-stone-300 hover:text-white transition-all">⛶ Fullscreen (F)</button>
     </div>
   </header>
 
-  <!-- Slide 1 -->
+  <!-- Slide 1: The Core Problem & Market Shift -->
   <main id="slide1" class="flex-1 flex items-center justify-center p-8 max-w-7xl mx-auto w-full">
     <div class="w-full flex flex-col gap-6">
       <div>
@@ -38,7 +38,7 @@
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-200">They Will Be Autonomous AI Buyer Agents.</span>
         </h1>
         <p class="text-stone-400 mt-2 text-sm md:text-base max-w-3xl">
-          E-commerce was designed for human clicks. When an AI bot arrives to purchase on a user's behalf, today's stores break completely.
+          E-commerce storefronts were designed strictly for human clicks. When an AI buyer bot arrives to purchase on a user's behalf, today's stores completely break.
         </p>
       </div>
 
@@ -53,22 +53,22 @@
             <div class="space-y-3 font-mono text-xs">
               <div class="p-3 rounded-xl bg-black/40 border border-red-900/30">1. AI Buyer Bot Arrives on consumer's behalf</div>
               <div class="text-center text-red-500 font-bold">▼</div>
-              <div class="p-3 rounded-xl bg-black/40 border border-red-900/30">2. Blocked by Captcha & JS DOM (No machine catalog)</div>
+              <div class="p-3 rounded-xl bg-black/40 border border-red-900/30">2. Blocked by Captchas & JS DOM (No machine catalog)</div>
               <div class="text-center text-red-500 font-bold">▼</div>
               <div class="p-3 rounded-xl bg-black/40 border border-red-900/30">3. Rigid Fixed Pricing (No negotiation protocol)</div>
               <div class="text-center text-red-500 font-bold">▼</div>
-              <div class="p-3 rounded-xl bg-red-900/30 border border-red-700 font-bold text-red-200">4. Checkout Failure & Abort (Manual human OTP needed)</div>
+              <div class="p-3 rounded-xl bg-red-900/30 border border-red-700 font-bold text-red-200">4. Checkout Failure & Abort (Requires manual human OTP)</div>
             </div>
           </div>
-          <div class="text-xs text-stone-500 pt-2 border-t border-red-900/30">Result: Merchant loses high-intent transaction to competitor.</div>
+          <div class="text-xs text-stone-500 pt-2 border-t border-red-900/30">Result: Merchant loses the high-intent transaction to competitor platforms.</div>
         </div>
 
-        <!-- MerchantMind -->
+        <!-- MerchantMind Infrastructure -->
         <div class="md:col-span-7 p-6 rounded-2xl bg-emerald-950/20 border border-emerald-800/40 flex flex-col justify-between gap-4">
           <div>
             <div class="flex items-center justify-between pb-3 border-b border-emerald-800/40 mb-3">
               <span class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">✓ MerchantMind Infrastructure on Razorpay Rails</span>
-              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-900/40 text-emerald-300 font-mono font-bold">Zero Friction</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-900/40 text-emerald-300 font-mono font-bold">Zero Friction Settlement</span>
             </div>
             <div class="space-y-3 font-mono text-xs">
               <div class="p-3 rounded-xl bg-black/40 border border-emerald-800/40 flex justify-between items-center">
@@ -88,7 +88,7 @@
               <div class="text-center text-emerald-500 font-bold">▼</div>
               <div class="p-3 rounded-xl bg-emerald-900/30 border border-emerald-600 font-bold text-emerald-200 flex justify-between items-center">
                 <span>4. Razorpay Test Rails Settlement</span>
-                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-stone-950 font-bold">Instant UPI Reserve Debit</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500 text-stone-950 font-bold">Instant UPI Reserve Pool Debit</span>
               </div>
             </div>
           </div>
@@ -102,7 +102,7 @@
     </div>
   </main>
 
-  <!-- Slide 2 -->
+  <!-- Slide 2: End-to-End System Architecture -->
   <main id="slide2" class="hidden flex-1 flex items-center justify-center p-8 max-w-7xl mx-auto w-full">
     <div class="w-full flex flex-col gap-6">
       <div>
@@ -176,8 +176,8 @@
   <footer class="px-8 py-4 border-t border-stone-800 bg-stone-900/60 flex items-center justify-between text-xs font-mono text-stone-500">
     <div>MerchantMind • Razorpay Hackathon 2026 • Track 01</div>
     <div class="flex gap-2">
-      <button onclick="goToSlide(1)" class="px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-stone-300 hover:text-white">← Slide 1</button>
-      <button onclick="goToSlide(2)" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500">Slide 2 →</button>
+      <button onclick="goToSlide(1)" class="px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-800 text-stone-300 hover:text-white transition-colors">← Slide 1</button>
+      <button onclick="goToSlide(2)" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500 transition-colors">Slide 2 →</button>
     </div>
   </footer>
 
@@ -196,6 +196,7 @@
     window.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ') goToSlide(2);
       if (e.key === 'ArrowLeft') goToSlide(1);
+      if (e.key === 'f' || e.key === 'F') toggleFullscreen();
     });
   </script>
 </body>
