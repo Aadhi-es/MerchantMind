@@ -50,7 +50,7 @@ export function ChatContainer() {
   const [isLoading, setIsLoading] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [products, setProducts] = useState<Product[]>(PRODUCTS);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(PRODUCTS[0] || null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedSize, setSelectedSize] = useState<string>("Standard");
   const [hasCrossSell, setHasCrossSell] = useState(false);
   const [conversationId, setConversationId] = useState<string>("conv_node_4102");
@@ -77,7 +77,6 @@ export function ChatContainer() {
       .then((data) => {
         if (data.products && data.products.length > 0) {
           setProducts(data.products);
-          setSelectedProduct(data.products[0]);
         }
       })
       .catch(console.error);
@@ -87,7 +86,7 @@ export function ChatContainer() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  const handleSendMessage = async (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string, cartSkusOverride?: string[]) => {
     const messageContent = textToSend || input.trim();
     if (!messageContent || isLoading) return;
 
@@ -102,6 +101,8 @@ export function ChatContainer() {
     if (!textToSend) setInput("");
     setIsLoading(true);
 
+    const activeCartSkus = cartSkusOverride || cart.map((c) => c.product.sku);
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -109,7 +110,7 @@ export function ChatContainer() {
         body: JSON.stringify({
           messages: [...messages, userMessage].map((m) => ({ role: m.role, content: m.content })),
           conversationId,
-          currentCartSkus: cart.map((c) => c.product.sku),
+          currentCartSkus: activeCartSkus,
         }),
       });
 
@@ -153,6 +154,19 @@ export function ChatContainer() {
     if (openCart) {
       setActiveRightTab("cart");
     }
+  };
+
+  const handleAddToCartAndRecommend = (product: Product, size = selectedSize) => {
+    handleAddToCart(product, size, false);
+    const existing = cart.some((c) => c.product.sku === product.sku);
+    const updatedCartSkus = existing
+      ? cart.map((c) => c.product.sku)
+      : [...cart.map((c) => c.product.sku), product.sku];
+
+    handleSendMessage(
+      `Added ${product.name} to cart! What companion items do you recommend to complete my setup?`,
+      updatedCartSkus
+    );
   };
 
   const handleUpdateQuantity = (sku: string, delta: number) => {
@@ -538,10 +552,10 @@ export function ChatContainer() {
                                   type="button"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    handleAddToCart(product, "Standard", true);
-                                    setMobileShowRightPanel(true);
+                                    handleAddToCartAndRecommend(product, "Standard");
                                   }}
                                   className="px-2.5 py-1 rounded bg-primary hover:bg-primary/90 text-white font-label text-[11px] font-semibold transition-colors flex items-center gap-1 shadow-xs"
+                                  title="Add to cart and recommend companion gear"
                                 >
                                   <ShoppingBag className="w-3 h-3" />
                                   <span>+ Add</span>
@@ -693,16 +707,30 @@ export function ChatContainer() {
 
         {/* Quick Suggestion Pills */}
         <div className="shrink-0 flex items-center gap-2 py-2 overflow-x-auto no-scrollbar border-t border-stone-200">
-          {[
-            "What products are currently in stock?",
-            "Show me studio monitors and bluetooth speakers",
-            "Best gear under ₹5,000",
-            "Do you have noise cancelling headphones?",
-          ].map((prompt, idx) => (
+          {(cart.length > 0
+            ? [
+                "What else do I need to complete my setup?",
+                "Show me mechanical keyboards and mice",
+                "Show me 4K curved monitors",
+                "Proceed to Razorpay Checkout",
+              ]
+            : [
+                "I need a desk setup",
+                "Show me studio monitors and bluetooth speakers",
+                "Best gear under ₹10,000",
+                "Do you have noise cancelling headphones?",
+              ]
+          ).map((prompt, idx) => (
             <button
               key={idx}
               type="button"
-              onClick={() => handleSendMessage(prompt)}
+              onClick={() => {
+                if (prompt === "Proceed to Razorpay Checkout") {
+                  handleInitiateCheckout();
+                } else {
+                  handleSendMessage(prompt);
+                }
+              }}
               className="px-2.5 py-1 rounded-md bg-white border border-stone-300 hover:border-primary text-stone-700 hover:text-primary font-label text-xs whitespace-nowrap transition-colors shadow-xs shrink-0"
             >
               {prompt}
@@ -1111,8 +1139,9 @@ export function ChatContainer() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() => handleAddToCart(selectedProduct, selectedSize, true)}
+                  onClick={() => handleAddToCartAndRecommend(selectedProduct, selectedSize)}
                   className="py-2.5 px-3 rounded-md bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-900 font-label text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                  title="Add to cart and recommend companion gear"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add to Cart</span>
@@ -1143,12 +1172,17 @@ export function ChatContainer() {
             </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-center p-6 text-stone-500">
-            <ShoppingBag className="w-12 h-12 text-stone-300 mb-3" />
-            <span className="font-headline text-base font-bold text-stone-700">Catalog Ready</span>
-            <p className="font-code text-xs mt-1 text-stone-500 max-w-xs">
-              Select or ask the AI curator for any product to inspect live details and initiate instant Razorpay checkout.
+          <div className="flex flex-col items-center justify-center h-full text-center p-6 text-stone-500 my-auto">
+            <div className="w-16 h-16 rounded-2xl bg-white border border-stone-200 shadow-xs flex items-center justify-center mb-4">
+              <ShoppingBag className="w-7 h-7 text-stone-400 stroke-[1.5]" />
+            </div>
+            <span className="font-headline text-base font-bold text-stone-800">No Item Selected</span>
+            <p className="font-body text-xs mt-1.5 text-stone-500 max-w-xs leading-relaxed">
+              Ask MerchantMind for recommendations or click &quot;Inspect&quot; on any product card in the chat to view technical specifications, variants, and stock.
             </p>
+            <div className="mt-4 px-3 py-1.5 rounded-md bg-stone-100 border border-stone-200 text-stone-600 font-code text-[11px]">
+              Ready for product inspection
+            </div>
           </div>
         )}
       </div>

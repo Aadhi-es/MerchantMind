@@ -70,17 +70,130 @@ export interface AgentResponse {
   };
 }
 
+export function getSetupCompanions(
+  catalog: Product[],
+  currentCartSkus: string[],
+  chosenSku?: string,
+  isDeskSetup: boolean = true,
+  isAudioSetup: boolean = false
+): Product[] {
+  const exclude = new Set([...(currentCartSkus || []), chosenSku].filter(Boolean) as string[]);
+
+  let candidateSkus: string[] = [];
+
+  const chosenProduct = chosenSku ? catalog.find((p) => p.sku?.toLowerCase() === chosenSku.toLowerCase()) : undefined;
+  const pairsWith = chosenProduct?.pairs_with || [];
+
+  if (isDeskSetup) {
+    const coreDeskSkus = [
+      "PER-KEY-01", // Keychron Q1 Pro Mechanical Keyboard
+      "PER-LOG-01", // Logitech MX Master 3S Wireless Mouse
+      "PER-DEL-01", // Dell UltraSharp 32" Curved 4K Monitor
+      "AUD-MAR-01", // Marshall Stanmore III Bluetooth Speaker
+      "STAT-GRV-01", // Grovemade Walnut Desk Shelf
+      "PER-LOG-03", // Logitech MX Mechanical Keyboard
+      "STAT-PRK-01", // Parker Sonnet Fountain Pen
+      "AUD-SNY-01", // Sony WH-1000XM5 Headphones
+    ];
+    candidateSkus = Array.from(new Set([...pairsWith, ...coreDeskSkus]));
+  } else if (isAudioSetup) {
+    const coreAudioSkus = [
+      "AUD-SNY-01",
+      "AUD-MAR-01",
+      "AUD-BOS-01",
+      "AUD-APL-02",
+      "AUD-JBL-01",
+      "STAT-GRV-01",
+    ];
+    candidateSkus = Array.from(new Set([...pairsWith, ...coreAudioSkus]));
+  } else if (chosenProduct) {
+    const sameCat = catalog.filter((p) => p.category === chosenProduct.category).map((p) => p.sku);
+    candidateSkus = Array.from(new Set([...pairsWith, ...sameCat]));
+  } else {
+    candidateSkus = catalog.slice(0, 10).map((p) => p.sku);
+  }
+
+  const companions = candidateSkus
+    .filter((sku) => !exclude.has(sku))
+    .map((sku) => catalog.find((p) => p.sku?.toLowerCase() === sku.toLowerCase()))
+    .filter((p): p is Product => Boolean(p));
+
+  return companions;
+}
+
 export async function processConversation(
   messages: Array<{ role: "user" | "assistant" | "system"; content: string }>,
   currentCartSkus: string[] = []
 ): Promise<AgentResponse> {
   const client = getGeminiClient();
   const lastUserMsg = messages[messages.length - 1]?.content || "";
+  const lastUserLower = lastUserMsg.toLowerCase().trim();
 
   // 1. Fetch live catalog dynamically from Supabase
   const liveCatalog = await getLiveCatalog();
+
+  // 2. Multi-turn intent & theme detection
+  const allUserText = messages
+    .filter((m) => m.role === "user")
+    .map((m) => m.content.toLowerCase())
+    .join(" ");
+
+  const isDeskSetup =
+    allUserText.includes("desk") ||
+    allUserText.includes("setup") ||
+    allUserText.includes("workstation") ||
+    allUserText.includes("office") ||
+    allUserText.includes("workspace") ||
+    allUserText.includes("table");
+
+  const isAudioSetup =
+    allUserText.includes("audio") ||
+    allUserText.includes("headphone") ||
+    allUserText.includes("speaker") ||
+    allUserText.includes("sound");
+
+  const isSelectionOrFollowUp =
+    /^(i'll take|i will take|i'll choose|i choose|i want|add|added|select|selected|go with|first one|second one|1st|2nd|pick|buy)\b/i.test(
+      lastUserLower
+    ) ||
+    lastUserLower.includes("added to cart") ||
+    lastUserLower.includes("what else") ||
+    lastUserLower.includes("what next") ||
+    lastUserLower.includes("recommend more") ||
+    lastUserLower.includes("anything else") ||
+    lastUserLower.includes("complete my setup") ||
+    lastUserLower.includes("more things") ||
+    lastUserLower.includes("more options") ||
+    lastUserLower.includes("more items");
+
+  // Determine what product was chosen or referred to
+  let chosenProduct: Product | undefined = undefined;
   const directMatches = searchCatalogSmart(liveCatalog, lastUserMsg);
-  const candidateSlice = directMatches.length > 0 ? directMatches.slice(0, 12) : liveCatalog.slice(0, 8);
+  if (isSelectionOrFollowUp) {
+    if (directMatches.length > 0) {
+      chosenProduct = directMatches[0];
+    } else if (currentCartSkus.length > 0) {
+      const lastSku = currentCartSkus[currentCartSkus.length - 1];
+      chosenProduct = liveCatalog.find((p) => p.sku === lastSku);
+    }
+  }
+
+  const companionCandidates = getSetupCompanions(
+    liveCatalog,
+    currentCartSkus,
+    chosenProduct?.sku,
+    isDeskSetup,
+    isAudioSetup
+  );
+
+  const excludeSkus = new Set([...currentCartSkus, chosenProduct?.sku].filter(Boolean) as string[]);
+
+  let candidateSlice: Product[];
+  if (isSelectionOrFollowUp || (isDeskSetup && currentCartSkus.length > 0)) {
+    candidateSlice = companionCandidates.length > 0 ? companionCandidates.slice(0, 12) : liveCatalog.slice(0, 8);
+  } else {
+    candidateSlice = directMatches.length > 0 ? directMatches.slice(0, 12) : liveCatalog.slice(0, 8);
+  }
 
   if (client) {
     // Model candidates: prioritize verified active Gemini model
@@ -98,25 +211,42 @@ export async function processConversation(
           systemInstruction: buildSystemInstruction(liveCatalog),
         });
 
-        const prompt = `
-The customer sent: "${lastUserMsg}".
-Current items in customer's cart: ${JSON.stringify(currentCartSkus)}.
-Catalog candidates matching their query: ${JSON.stringify(
-          candidateSlice.map((m) => ({ sku: m.sku, name: m.name, price: `₹${m.price / 100}`, tags: m.tags, pitch: m.short_pitch, upgrades_to: m.upgrades_to }))
-        )}.
+        const conversationHistoryText = messages
+          .slice(-6)
+          .map((m) => `${m.role === "user" ? "Shopper" : "Curator"}: ${m.content}`)
+          .join("\n");
 
-Respond to the customer directly following your persona.
-At the very end of your response, output a strict JSON block wrapped in \`\`\`json ... \`\`\` with this structure:
+        const prompt = `
+Conversation history:
+${conversationHistoryText}
+
+Current message from shopper: "${lastUserMsg}".
+Current items in customer's cart: ${JSON.stringify(currentCartSkus)}.
+Theme: ${isDeskSetup ? "Desk Setup / Workspace" : isAudioSetup ? "Audio Setup" : "Retail Shopping"}.
+Already chosen/in cart: ${chosenProduct ? chosenProduct.name : currentCartSkus.join(", ")}.
+
+CRITICAL INSTRUCTIONS:
+1. If the shopper just chose or added an item (e.g. ${chosenProduct?.name || "an item"}):
+   - Acknowledge their choice warmly and concisely.
+   - DO NOT recommend items already in their cart or already selected: ${JSON.stringify(Array.from(excludeSkus))}.
+   - Recommend 2 to 3 NEW complementary companion products from these candidates to complete their setup:
+${JSON.stringify(
+  candidateSlice.map((m) => ({
+    sku: m.sku,
+    name: m.name,
+    price: `₹${m.price / 100}`,
+    tags: m.tags,
+    pitch: m.short_pitch,
+  }))
+)}
+2. Explain briefly how each companion item pairs with what they already chose.
+3. At the end of your response, output a strict JSON block wrapped in \`\`\`json ... \`\`\` with this structure:
 {
   "recommendedSkus": ["SKU-1", "SKU-2"],
-  "suggestedUpsell": {
-    "originalSku": "SKU-...",
-    "upsellSku": "SKU-...",
-    "priceDelta": 40000,
-    "reason": "..."
-  } or null,
-  "suggestedCrossSells": ["SKU-..."]
+  "suggestedUpsell": null,
+  "suggestedCrossSells": ["SKU-3"]
 }
+Note: "recommendedSkus" MUST contain ONLY the new companion items, NEVER the items already in the cart!
 `;
 
         const result = await model.generateContent(prompt);
@@ -141,9 +271,16 @@ At the very end of your response, output a strict JSON block wrapped in \`\`\`js
           }
         }
 
-        // If no SKUs extracted, populate from direct matches
-        if (recommendedSkus.length === 0 && directMatches.length > 0) {
-          recommendedSkus = directMatches.slice(0, 3).map((m) => m.sku);
+        // Filter out any excluded items from recommendedSkus
+        recommendedSkus = recommendedSkus.filter((sku) => !excludeSkus.has(sku));
+
+        // If no SKUs or all were excluded, populate from companionCandidates or candidateSlice
+        if (recommendedSkus.length === 0) {
+          if ((isSelectionOrFollowUp || (isDeskSetup && currentCartSkus.length > 0)) && companionCandidates.length > 0) {
+            recommendedSkus = companionCandidates.slice(0, 3).map((m) => m.sku);
+          } else if (candidateSlice.length > 0) {
+            recommendedSkus = candidateSlice.filter((m) => !excludeSkus.has(m.sku)).slice(0, 3).map((m) => m.sku);
+          }
         }
 
         return {
@@ -159,17 +296,54 @@ At the very end of your response, output a strict JSON block wrapped in \`\`\`js
   }
 
   // Graceful rule-based fallback if API key is invalid/offline
-  return generateIntelligentFallback(lastUserMsg, directMatches, liveCatalog);
+  return generateIntelligentFallback(
+    lastUserMsg,
+    directMatches,
+    liveCatalog,
+    companionCandidates,
+    chosenProduct,
+    isSelectionOrFollowUp,
+    isDeskSetup,
+    currentCartSkus
+  );
 }
 
 function generateIntelligentFallback(
   userMessage: string,
   directMatches: Product[],
-  liveCatalog: Product[]
+  liveCatalog: Product[],
+  companionCandidates: Product[],
+  chosenProduct: Product | undefined,
+  isSelectionOrFollowUp: boolean,
+  isDeskSetup: boolean,
+  currentCartSkus: string[]
 ): AgentResponse {
   const q = userMessage.toLowerCase().trim();
 
-  // 1. Conversational greetings & assistant discovery
+  // 1. Selection or follow-up companion recommendations
+  if ((isSelectionOrFollowUp || (isDeskSetup && currentCartSkus.length > 0)) && companionCandidates.length > 0) {
+    const chosenName = chosenProduct?.name || (currentCartSkus.length > 0 ? liveCatalog.find((p) => p.sku === currentCartSkus[0])?.name : "") || "your selection";
+    const topComps = companionCandidates.slice(0, 3);
+    const itemsText = topComps
+      .map(
+        (p, i) =>
+          `${i + 1}. **${p.name}** — ₹${(p.price / 100).toLocaleString("en-IN")}. ${
+            p.short_pitch || p.description
+          }`
+      )
+      .join("\n");
+
+    return {
+      reply:
+        `Great choice with the **${chosenName}**! To complete your ${isDeskSetup ? "desk setup" : "order"}, here are verified companion essentials that pair seamlessly:\n\n` +
+        itemsText +
+        `\n\nAll items are in stock and ready to dispatch. Which one would you like to add next?`,
+      recommendedSkus: topComps.map((p) => p.sku),
+      suggestedCrossSells: topComps[0]?.pairs_with || [],
+    };
+  }
+
+  // 2. Conversational greetings & assistant discovery
   const isGreeting =
     /^(hi|hello|hey|greetings|good\s*(morning|afternoon|evening)|yo|sup|help|who are you|what can you do|start)(\s|!|\?|$)/i.test(
       q
@@ -191,7 +365,7 @@ function generateIntelligentFallback(
     };
   }
 
-  // 2. Direct matches found
+  // 3. Direct matches found
   if (directMatches.length > 0) {
     const matches = directMatches.slice(0, 3);
     const itemsText = matches
@@ -229,7 +403,7 @@ function generateIntelligentFallback(
     };
   }
 
-  // 3. Search query with no direct matches, but catalog has inventory
+  // 4. Search query with no direct matches, but catalog has inventory
   if (liveCatalog.length > 0) {
     const availableItems = liveCatalog
       .slice(0, 3)
@@ -246,7 +420,7 @@ function generateIntelligentFallback(
     };
   }
 
-  // 4. Truly empty catalog
+  // 5. Truly empty catalog
   return {
     reply:
       "Welcome to MerchantMind. Our live inventory catalog is currently syncing. Feel free to seed demo items in Settings or check back in a moment.",
@@ -254,3 +428,4 @@ function generateIntelligentFallback(
     suggestedCrossSells: [],
   };
 }
+

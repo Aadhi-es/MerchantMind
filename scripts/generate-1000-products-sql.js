@@ -260,7 +260,7 @@ const CATEGORIES = [
         brand: "Bosch & Whirlpool",
         prefix: "APP-BSH",
         tag: "bosch",
-        img: "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=800&q=80",
+        img: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?w=800&q=80",
         items: [
           { base: "Bosch 9kg Series 8 Front Load Washing Machine", price: 5499000, sub: "washing-machines", desc: "ActiveOxygen hygienic washing removes 99.99% bacteria, EcoSilence Drive motor." },
           { base: "Bosch 8kg Series 6 Front Load Washer", price: 4199000, sub: "washing-machines", desc: "AntiStain automatically targets 4 stubborn stains, SpeedPerfect reduces time by 65%." },

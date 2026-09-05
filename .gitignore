@@ -47,3 +47,11 @@ ehthumbs.db
 # Local scratch / test files
 scratch/
 test-*.js
+
+# Presentations & Pitch Materials (Do NOT track or commit)
+*.pptx
+*.ppt
+*pitch*
+*Pitch*
+*.mp4
+*.mov
